@@ -1,9 +1,9 @@
 Article Date Extractor
 ============================
 
-A simple Python module to
+A simple Python module to automatically detect, extract and normalizes an online article or blog post publication date.
 
-.. code-block:: python
+```python
 
     import articleDateExtractor
 
@@ -15,13 +15,13 @@ Installing
 ----------
 Available through pip:
 
-.. code-block:: bash
+```bash
 
     $ pip install articleDateExtractor
 
 Alternatively, you can install from source:
 
-.. code-block:: bash
+```bash
 
     $ git clone https://github.com/Webhose/article-date-extractor
     $ cd article-date-extractor
