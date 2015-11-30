@@ -20,7 +20,6 @@ articleDateExtractor (Article Date Extractor) is a simple open source Python mod
 
     print d
 
-
     d = articleDateExtractor.extractArticlePublishedDate("http://techcrunch.com/2015/11/29/tyro-payments/")
 
     print d
