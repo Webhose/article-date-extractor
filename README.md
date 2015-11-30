@@ -16,9 +16,9 @@ articleDateExtractor (Article Date Extractor) is a simple open source Python mod
 
     import articleDateExtractor
 
-    date = articleDateExtractor.extractArticlePublishedData("http://edition.cnn.com/2015/11/28/opinions/sutter-cop21-paris-preview-two-degrees/index.html")
+    d = articleDateExtractor.extractArticlePublishedDate("http://edition.cnn.com/2015/11/28/opinions/sutter-cop21-paris-preview-two-degrees/index.html")
 
-    print date
+    print d
 ```
 
 
