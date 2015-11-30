@@ -3,14 +3,14 @@ About
 
 articleDateExtractor (Article Date Extractor) is a simple open source Python module, built and maintained by [Webhose.io](https://webhose.io), that automatically detects, extracts and normalizes the publication date of an online article or blog post.
 
-Feature
---------
-
-1.  Extracting the publication date information when it is specified in web pages, with over 90% success rate.
+## Feature
 
 
-A Quick Example
----------------
+1.  Extracting the publication date information when it is specified in a web page, with over 90% success rate.
+
+
+## A Quick Example
+
 
 ```python
 
@@ -22,8 +22,8 @@ A Quick Example
 ```
 
 
-Installing
-----------
+## Installing
+
 Available through pip:
 
 ```bash
@@ -39,14 +39,14 @@ Alternatively, you can install from source:
     $ python setup.py install
 ```
 
-Dependencies
-------------
-[BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/) >= 3.2.1
-[dateparser](https://github.com/scrapinghub/dateparser) >= 0.3.1
+## Dependencies
+
+* [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/) >= 3.2.1
+* [dateparser](https://github.com/scrapinghub/dateparser) >= 0.3.1
 
 
-About Webhose.io
-----------------
+## About Webhose.io
+
 
 At [Webhose.io](https://webhose.io) we crawl, structure, unify and aggregate data from millions of online sources (news sites, blogs, discussion forums, comments etc..), so the need for a
 scalable solution that will automatically extract and structure the unstructured web is critical. We use multiple signals and algorithms to automatically detect where the post text is, the author name, the comments,
