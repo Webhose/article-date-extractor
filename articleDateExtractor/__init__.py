@@ -9,7 +9,7 @@ except ImportError:
 
 
 # Try to extract from the article URL - simple but might work as a fallback
-def extractFromURL(url):
+def _extractFromURL(url):
     date = None
 
     m = re.search('(\d{4}[/-]\d{2}[/-]\d{2})', url)
@@ -19,7 +19,7 @@ def extractFromURL(url):
 
     return  date
 
-def extractFromLDJson(parsedHTML):
+def _extractFromLDJson(parsedHTML):
     jsonDate = None
     data = None
     try:
@@ -44,7 +44,7 @@ def extractFromLDJson(parsedHTML):
     return jsonDate
 
 
-def extractFromMeta(parsedHTML):
+def _extractFromMeta(parsedHTML):
 
     metaDate = None
     for meta in parsedHTML.findAll("meta"):
@@ -141,7 +141,7 @@ def extractFromMeta(parsedHTML):
         #<meta property="og:image" content="http://www.dailytimes.com.pk/digital_images/400/2015-11-26/norway-return-number-of-asylum-seekers-to-pakistan-1448538771-7363.jpg"/>
         if 'og:image' == metaProperty or "image" == itemProp:
             url = meta['content'].strip()
-            possibleDate = extractFromURL(url)
+            possibleDate = _extractFromURL(url)
             if possibleDate is not None:
                 return  possibleDate
 
@@ -156,7 +156,7 @@ def extractFromMeta(parsedHTML):
 
     return None
 
-def extractFromHTMLTag(parsedHTML):
+def _extractFromHTMLTag(parsedHTML):
     #<time>
     for time in parsedHTML.findAll("time"):
         datetime = time.get('datetime', '')
@@ -192,25 +192,25 @@ def extractFromHTMLTag(parsedHTML):
     return None
 
 
-def extractArticlePublishedData(articleLink):
+def extractArticlePublishedDate(articleLink):
 
     print "Extracting date from " + articleLink
 
     articleDate = None
 
     try:
-        articleDate = extractFromURL(articleLink)
+        articleDate = _extractFromURL(articleLink)
         request = urllib2.Request(articleLink)
         # Using a browser user agent, decreases the change of sites blocking this request
         request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
         html = urllib2.build_opener().open(request).read()
         parsedHTML = BeautifulSoup(html)
 
-        possibleDate = extractFromLDJson(parsedHTML)
+        possibleDate = _extractFromLDJson(parsedHTML)
         if possibleDate is None:
-            possibleDate = extractFromMeta(parsedHTML)
+            possibleDate = _extractFromMeta(parsedHTML)
         if possibleDate is None:
-            possibleDate = extractFromHTMLTag(parsedHTML)
+            possibleDate = _extractFromHTMLTag(parsedHTML)
 
 
         articleDate = possibleDate
