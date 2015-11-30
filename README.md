@@ -1,3 +1,9 @@
+[![version][pypi-version]][pypi-url]
+
+[![License][pypi-license]][license-url]
+[![Downloads][pypi-downloads]][pypi-url]
+[![Gitter][gitter-image]][gitter-url]
+
 About
 =====
 
@@ -60,4 +66,13 @@ and of course the date. With articleDateExtractor (Article Date Extractor) we re
 
 
 
+[license-url]: https://github.com/Webhose/article-date-extractor/blob/master/LICENSE
 
+[gitter-url]: https://gitter.im/Webhose
+[gitter-image]: https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg?style=flat
+
+
+[pypi-url]: https://pypi.python.org/pypi/articleDateExtractor
+[pypi-license]: https://img.shields.io/pypi/l/articleDateExtractor.svg?style=flat
+[pypi-version]: https://img.shields.io/pypi/v/articleDateExtractor.svg?style=flat
+[pypi-downloads]: https://img.shields.io/pypi/dm/articleDateExtractor.svg?style=flat
