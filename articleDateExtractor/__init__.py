@@ -1,6 +1,7 @@
 __author__ = 'Ran Geva'
 
-import sys, urllib2,re, dateparser,json
+import urllib2,re, json
+from dateutil.parser import parse
 try:
     from bs4 import BeautifulSoup
 except ImportError:
@@ -8,38 +9,47 @@ except ImportError:
 
 
 
+def parseStrDate(dateString):
+    try:
+        dateTimeObj = parse(dateString)
+        return dateTimeObj
+    except:
+        return None
+
 # Try to extract from the article URL - simple but might work as a fallback
 def _extractFromURL(url):
-    date = None
 
-    m = re.search('(\d{4}[/-]\d{2}[/-]\d{2})', url)
+    m = re.search(r'([\./\-_]{0,1}(19|20)\d{2})[\./\-_]{0,1}(([0-3]{0,1}[0-9][\./\-_])|(\w{3,5}[\./\-_]))([0-3]{0,1}[0-9][\./\-]{0,1})?', url)
     if m:
-        return dateparser.parse(m.group(1))
+        return parseStrDate(m.group(0))
 
 
-    return  date
+    return  None
 
 def _extractFromLDJson(parsedHTML):
     jsonDate = None
-    data = None
     try:
         script = parsedHTML.find('script', type='application/ld+json')
         if script is None:
             return None
 
         data = json.loads(script.text)
-    except Exception, e:
-        return
 
-    try:
-        jsonDate = dateparser.parse(data['datePublished'])
-    except Exception, e:
-        pass
+        try:
+            jsonDate = parseStrDate(data['datePublished'])
+        except Exception, e:
+            pass
 
-    try:
-        jsonDate = dateparser.parse(data['dateCreated'])
+        try:
+            jsonDate = parseStrDate(data['dateCreated'])
+        except Exception, e:
+            pass
+
+
     except Exception, e:
-        pass
+        return None
+
+
 
     return jsonDate
 
@@ -152,7 +162,7 @@ def _extractFromMeta(parsedHTML):
             break
 
     if metaDate is not None:
-        return dateparser.parse(metaDate)
+        return parseStrDate(metaDate)
 
     return None
 
@@ -161,11 +171,11 @@ def _extractFromHTMLTag(parsedHTML):
     for time in parsedHTML.findAll("time"):
         datetime = time.get('datetime', '')
         if len(datetime) > 0:
-            return dateparser.parse(datetime)
+            return parseStrDate(datetime)
 
         datetime = time.get('class', '')
         if len(datetime) > 0 and datetime[0].lower() == "timestamp":
-            return dateparser.parse(time.string)
+            return parseStrDate(time.string)
 
 
     tag = parsedHTML.find("span", {"itemprop": "datePublished"})
@@ -174,7 +184,7 @@ def _extractFromHTMLTag(parsedHTML):
         if dateText is None:
             dateText = tag.text
         if dateText is not None:
-            return dateparser.parse(dateText)
+            return parseStrDate(dateText)
 
     #class=
     for tag in parsedHTML.find_all(['span', 'p','div'], class_=re.compile("pubdate|timestamp|article_date|articledate|date",re.IGNORECASE)):
@@ -182,7 +192,7 @@ def _extractFromHTMLTag(parsedHTML):
         if dateText is None:
             dateText = tag.text
 
-        possibleDate = dateparser.parse(dateText)
+        possibleDate = parseStrDate(dateText)
 
         if possibleDate is not None:
             return  possibleDate
@@ -223,3 +233,7 @@ def extractArticlePublishedDate(articleLink):
 
 
 
+
+if __name__ == '__main__':
+    d = extractArticlePublishedDate("http://techcrunch.com/2015/11/30/atlassian-share-price/")
+    print d

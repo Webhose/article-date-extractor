@@ -53,7 +53,7 @@ Alternatively, you can install from source:
 ## Dependencies
 
 * [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/) >= 3.2.1
-* [dateparser](https://github.com/scrapinghub/dateparser) >= 0.3.1
+* [python-dateutil](https://github.com/dateutil/dateutil/) >= 2.4.2
 
 
 ## About Webhose.io

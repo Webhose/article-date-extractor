@@ -11,7 +11,7 @@ with open('README.md', 'r', 'utf-8') as f:
 setup(
     name='articleDateExtractor',
     packages=['articleDateExtractor'],
-    version='0.13',
+    version='0.14',
     author='Ran Geva',
     author_email='ran@webhose.io',
     url='https://github.com/Webhose/article-date-extractor',
@@ -20,7 +20,7 @@ setup(
     long_description=readme,
     install_requires=[
         "BeautifulSoup >= 3.2.1",
-        "dateparser >= 0.3.1"
+        "python-dateutil >= 2.4.2"
     ],
     classifiers=(
         'Development Status :: 4 - Beta',
