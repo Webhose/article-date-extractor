@@ -19,6 +19,7 @@ def parseStrDate(dateString):
 # Try to extract from the article URL - simple but might work as a fallback
 def _extractFromURL(url):
 
+    #Regex by Newspaper3k  - https://github.com/codelucas/newspaper/blob/master/newspaper/urls.py
     m = re.search(r'([\./\-_]{0,1}(19|20)\d{2})[\./\-_]{0,1}(([0-3]{0,1}[0-9][\./\-_])|(\w{3,5}[\./\-_]))([0-3]{0,1}[0-9][\./\-]{0,1})?', url)
     if m:
         return parseStrDate(m.group(0))
