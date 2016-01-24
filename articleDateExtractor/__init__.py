@@ -203,7 +203,7 @@ def _extractFromHTMLTag(parsedHTML):
     return None
 
 
-def extractArticlePublishedDate(articleLink):
+def extractArticlePublishedDate(articleLink, html = None):
 
     print "Extracting date from " + articleLink
 
@@ -211,10 +211,13 @@ def extractArticlePublishedDate(articleLink):
 
     try:
         articleDate = _extractFromURL(articleLink)
-        request = urllib2.Request(articleLink)
-        # Using a browser user agent, decreases the change of sites blocking this request - just a suggestion
-        # request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
-        html = urllib2.build_opener().open(request).read()
+
+        if html is None:
+            request = urllib2.Request(articleLink)
+            # Using a browser user agent, decreases the change of sites blocking this request - just a suggestion
+            # request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
+            html = urllib2.build_opener().open(request).read()
+
         parsedHTML = BeautifulSoup(html)
 
         possibleDate = _extractFromLDJson(parsedHTML)
