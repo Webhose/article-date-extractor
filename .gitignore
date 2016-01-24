@@ -1,3 +1,14 @@
+/.idea/.name
+/.idea/article-date-extractor.iml
+/.idea/encodings.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
+/dist/articleDateExtractor-0.14-py2-none-any.whl
+/dist/articleDateExtractor-0.14.tar.gz
+/dist/articleDateExtractor-0.15-py2-none-any.whl
+/dist/articleDateExtractor-0.15.tar.gz
 /dist/articleDateExtractor-0.12-py2-none-any.whl
 /dist/articleDateExtractor-0.12.tar.gz
 /dist/articleDateExtractor-0.13-py2-none-any.whl
