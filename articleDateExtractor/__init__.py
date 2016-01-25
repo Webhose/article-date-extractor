@@ -229,9 +229,9 @@ def extractArticlePublishedDate(articleLink, html = None):
 
         articleDate = possibleDate
 
-    except Exception, e:
+    except Exception as e:
         print "Exception in extractArticlePublishedDate for " + articleLink
-        print e
+        print e.message, e.args
 
 
 
