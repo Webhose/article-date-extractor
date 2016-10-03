@@ -19,7 +19,7 @@ setup(
     description='Automatically extracts and normalizes an online article or blog post publication date',
     long_description=readme,
     install_requires=[
-        "BeautifulSoup >= 3.2.1",
+        "BeautifulSoup4 >= 4.5.1",
         "python-dateutil >= 2.4.2"
     ],
     classifiers=(
@@ -28,7 +28,6 @@ setup(
         'Natural Language :: English',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 3.0',
         )
 )
