@@ -10,7 +10,7 @@ setup(
     version='0.17',
     author='Ran Geva',
     author_email='ran@webhose.io',
-    url='https://github.com/Webhose/article-date-extractor',
+    url='https://github.com/factmata/article-date-extractor',
     license='MIT',
     description='Automatically extracts and normalizes an online article or blog post publication date',
     install_requires=[
