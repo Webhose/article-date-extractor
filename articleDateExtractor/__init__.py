@@ -1,6 +1,7 @@
 __author__ = 'Ran Geva'
 
-import urllib2,re, json
+from six.moves import urllib
+import re, json
 from dateutil.parser import parse
 try:
     from bs4 import BeautifulSoup
@@ -38,16 +39,16 @@ def _extractFromLDJson(parsedHTML):
 
         try:
             jsonDate = parseStrDate(data['datePublished'])
-        except Exception, e:
+        except Exception as e:
             pass
 
         try:
             jsonDate = parseStrDate(data['dateCreated'])
-        except Exception, e:
+        except Exception as e:
             pass
 
 
-    except Exception, e:
+    except Exception as e:
         return None
 
 
@@ -205,7 +206,7 @@ def _extractFromHTMLTag(parsedHTML):
 
 def extractArticlePublishedDate(articleLink, html = None):
 
-    print "Extracting date from " + articleLink
+    print("Extracting date from " + articleLink)
 
     articleDate = None
 
@@ -213,10 +214,10 @@ def extractArticlePublishedDate(articleLink, html = None):
         articleDate = _extractFromURL(articleLink)
 
         if html is None:
-            request = urllib2.Request(articleLink)
+            request = urllib.request.Request(articleLink)
             # Using a browser user agent, decreases the change of sites blocking this request - just a suggestion
             # request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
-            html = urllib2.build_opener().open(request).read()
+            html = urllib.request.build_opener().open(request).read()
 
         parsedHTML = BeautifulSoup(html,"lxml")
 
@@ -230,8 +231,8 @@ def extractArticlePublishedDate(articleLink, html = None):
         articleDate = possibleDate
 
     except Exception as e:
-        print "Exception in extractArticlePublishedDate for " + articleLink
-        print e.message, e.args
+        print("Exception in extractArticlePublishedDate for " + articleLink)
+        print(e.message, e.args)
 
 
 
@@ -242,4 +243,4 @@ def extractArticlePublishedDate(articleLink, html = None):
 
 if __name__ == '__main__':
     d = extractArticlePublishedDate("http://techcrunch.com/2015/11/30/atlassian-share-price/")
-    print d
+    print(d)
