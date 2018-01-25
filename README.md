@@ -24,11 +24,11 @@ articleDateExtractor (Article Date Extractor) is a simple open source Python mod
 
     d = articleDateExtractor.extractArticlePublishedDate("http://edition.cnn.com/2015/11/28/opinions/sutter-cop21-paris-preview-two-degrees/index.html")
 
-    print d
+    print (d)
 
     d = articleDateExtractor.extractArticlePublishedDate("http://techcrunch.com/2015/11/29/tyro-payments/")
 
-    print d
+    print (d)
 
 ```
 
@@ -52,7 +52,7 @@ Alternatively, you can install from source:
 
 ## Dependencies
 
-* [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/) >= 3.2.1
+* [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/) >= 4.6.0
 * [python-dateutil](https://github.com/dateutil/dateutil/) >= 2.4.2
 
 
