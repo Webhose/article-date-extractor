@@ -220,10 +220,10 @@ def extractArticlePublishedDate(articleLink, html = None):
         articleDate = _extractFromURL(articleLink)
 
         if html is None:
-            opener = urllib.build_opener()
+            request = urllib.Request(articleLink)
             # Using a browser user agent, decreases the change of sites blocking this request - just a suggestion
-            # opener.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
-            html = opener.open(articleLink).read()
+            # request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
+            html = urllib.build_opener().open(request).read()
 
         parsedHTML = BeautifulSoup(html,"lxml")
 
