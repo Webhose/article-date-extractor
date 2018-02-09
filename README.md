@@ -52,7 +52,7 @@ Alternatively, you can install from source:
 
 ## Dependencies
 
-* [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/) >= 4.6.0
+* [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/bs4/) >= 4.6.0
 * [python-dateutil](https://github.com/dateutil/dateutil/) >= 2.4.2
 
 
