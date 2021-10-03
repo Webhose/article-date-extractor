@@ -2,6 +2,8 @@ __author__ = 'Ran Geva'
 
 import re,json
 from dateutil.parser import parse
+from datetime import datetime
+import pytz
 
 #try except for different urllib under python3 and python2
 try:
@@ -220,10 +222,7 @@ def extractArticlePublishedDate(articleLink, html = None):
         articleDate = _extractFromURL(articleLink)
 
         if html is None:
-            request = urllib.Request(articleLink)
-            # Using a browser user agent, decreases the change of sites blocking this request - just a suggestion
-            # request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
-            html = urllib.build_opener().open(request).read()
+            html = _get_html_response(articleLink)
 
         parsedHTML = BeautifulSoup(html,"lxml")
 
@@ -243,6 +242,48 @@ def extractArticlePublishedDate(articleLink, html = None):
     return articleDate
 
 
+def _get_html_response(url):
+    """
+    simple request execution
+    :param url: string of url
+    :return: html response
+    """
+    request = urllib.Request(url)
+    html = urllib.build_opener().open(request).read()
+    
+    return html
+
+
+
+def get_relevant_date(url, html=None):
+    """
+    retrieves the most relevant published date for an article
+    :param url: string of url
+    :param html: string of html response (to avoid request execution)
+    :return: oldest date from the following options:
+        1) date in the url
+        2) headers of the response (json-ld, meta, etc.)
+        3) html known tags
+    """
+    # getting date by input url
+    url_base_date = _extractFromURL(url)
+
+    # bs parsing for extended data
+    html = html or _get_html_response(url)
+    parsed_html = BeautifulSoup(html, "lxml")
+
+    # extended dates (json-ld, html tags, etc.)
+    jsonld_base_date = _extractFromLDJson(parsed_html)
+    meta_base_date = _extractFromMeta(parsed_html)
+    html_tags_base_date = _extractFromHTMLTag(parsed_html)
+
+    possible_dates = [url_base_date, jsonld_base_date, meta_base_date, html_tags_base_date]
+    possible_dates = filter(lambda _date: _date is not None and isinstance(_date, datetime), possible_dates)
+    possible_dates = [_date.replace(tzinfo=pytz.UTC) for _date in possible_dates]
+    print(possible_dates)
+
+    # return oldest date
+    return min(possible_dates)
 
 
 if __name__ == '__main__':
