@@ -9,7 +9,7 @@ with open('README.md', 'r', 'utf-8') as f:
     readme = f.read()
 
 setup(
-    name='articleDateExtractor',
+    name='webz-article-date-extractor',
     packages=['articleDateExtractor'],
     version='0.21.0',
     author='Ran Geva',
