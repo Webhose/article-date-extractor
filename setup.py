@@ -11,7 +11,7 @@ with open('README.md', 'r', 'utf-8') as f:
 setup(
     name='webz-article-date-extractor',
     packages=['articleDateExtractor'],
-    version='0.21.0',
+    version='0.21.1',
     author='Ran Geva',
     author_email='ran@webhose.io, yitao.sun@yahoo.com, wilson.s.shilo@gmail.com',
     url='https://github.com/Webhose/article-date-extractor',
