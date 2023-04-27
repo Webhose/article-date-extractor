@@ -9,9 +9,9 @@ with open('README.md', 'r', 'utf-8') as f:
     readme = f.read()
 
 setup(
-    name='articleDateExtractor',
+    name='webz-article-date-extractor',
     packages=['articleDateExtractor'],
-    version='0.20',
+    version='0.21.0',
     author='Ran Geva',
     author_email='ran@webhose.io, yitao.sun@yahoo.com, wilson.s.shilo@gmail.com',
     url='https://github.com/Webhose/article-date-extractor',
