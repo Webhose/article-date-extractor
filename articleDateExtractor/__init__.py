@@ -6,6 +6,7 @@ from datetime import datetime
 from webhose_metrics import count as metrics_count
 import pytz
 from urlparse import urlparse
+from omgili.tld import etld
 
 # try except for different urllib under python3 and python2
 try:
@@ -271,8 +272,8 @@ def get_relevant_date(url, html=None):
     print(possible_dates)
 
     metrics_count(
-        name="articleDateExtractor_success_total" if possible_dates is not None else "articleDateExtractor_failed_total",
-        labels={"domain": urlparse(url).netloc},
+        name="articleDateExtractor_success_total" if len(possible_dates) != 0 else "articleDateExtractor_failed_total",
+        labels={"domain": etld.domain_name(url)},
         value=1)
 
     # return oldest date
