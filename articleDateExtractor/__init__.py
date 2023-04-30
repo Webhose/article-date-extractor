@@ -273,7 +273,7 @@ def get_relevant_date(url, html=None):
 
     metrics_count(
         name="articleDateExtractor_success_total" if len(possible_dates) != 0 else "articleDateExtractor_failed_total",
-        labels={"domain": etld.domain_name(url)},
+        labels={"domain": urlparse(url).netloc},
         value=1)
 
     # return oldest date
