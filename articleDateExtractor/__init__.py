@@ -2,11 +2,16 @@ __author__ = 'Ran Geva'
 
 import re, json
 from dateutil.parser import parse
+import dateparser
 from datetime import datetime
 from webhose_metrics import count as metrics_count
 import pytz
-from urlparse import urlparse
-from omgili.tld import etld
+from logger import Logger
+
+datetime_html_attributes_formats = "pub+|article+|date+|time+|tms+|mod+"
+
+logger_handler = Logger(name="article_date_extractor_logger", path="/var/log/webhose/articleDateExtractor_logs",
+                        level="DEBUG").get_logger()
 
 # try except for different urllib under python3 and python2
 try:
@@ -15,17 +20,35 @@ except ImportError:
     import urllib2 as urllib
 
 try:
-    from bs4 import BeautifulSoup
+    from bs4 import BeautifulSoup, Tag
 except ImportError:
-    from BeautifulSoup import BeautifulSoup
+    from BeautifulSoup import BeautifulSoup, Tag
 
 
-def parseStrDate(dateString):
+def parse_date_by_daetutil(dateString):
     try:
         dateTimeObj = parse(dateString)
         return dateTimeObj
-    except:
+    except Exception as err:
         return None
+
+
+def parse_date_by_dateparser(dateString):
+    try:
+        dateTimeObj = dateparser.parse(dateString)
+        return dateTimeObj
+    except Exception as err:
+        return None
+
+
+def parseStrDate(dateString):
+    dateTimeObj = None
+    if dateString is not None:
+        dateString = dateString.rstrip().lstrip()
+        dateTimeObj = parse_date_by_daetutil(dateString)
+        if dateTimeObj is None or "":
+            dateTimeObj = parse_date_by_dateparser(dateString)
+    return dateTimeObj
 
 
 # Try to extract from the article URL - simple but might work as a fallback
@@ -40,30 +63,32 @@ def _extractFromURL(url):
     return None
 
 
+def _extract_by_tag(tag, parsedHTML, attr):
+    for tag_span in parsedHTML.find_all(tag, **{attr: re.compile(datetime_html_attributes_formats, re.IGNORECASE)}):
+        dateText = tag_span.string or tag_span.text
+        return parseStrDate(dateText)
+
+
 def _extractFromLDJson(parsedHTML):
-    jsonDate = None
     try:
         script = parsedHTML.find('script', type='application/ld+json')
         if script is None:
+            logger_handler.debug("ERROR: [_extractFromLDJson] - script none")
             return None
+        if len(script.text):
+            script_data = json.loads(script.text)
+        elif len(script.string):
+            script_data = json.loads(script.string)
+        if isinstance(script_data, dict):
+            script_data = [script_data]
+        for data in script_data:
+            jsonDate = parseStrDate(data.get('dateCreated', None)) or parseStrDate(data.get('datePublished', None))
+            if jsonDate:
+                return jsonDate
+    except Exception as err:
+        logger_handler.debug("ERROR: [_extractFromLDJson] - {err}".format(err=err))
 
-        data = json.loads(script.text)
-
-        try:
-            jsonDate = parseStrDate(data['datePublished'])
-        except Exception as e:
-            pass
-
-        try:
-            jsonDate = parseStrDate(data['dateCreated'])
-        except Exception as e:
-            pass
-
-
-    except Exception as e:
-        return None
-
-    return jsonDate
+    return None
 
 
 def _extractFromMeta(parsedHTML):
@@ -164,22 +189,29 @@ def _extractFromMeta(parsedHTML):
             metaDate = meta['content'].strip()
             break
 
+        logger_handler.debug(
+            "ERROR-INFO- [_extractFromMeta] - not found properties for meta: {metadata}".format(metadata=meta))
+
     if metaDate is not None:
         return parseStrDate(metaDate)
 
+    logger_handler.debug("ERROR: [_extractFromMeta] - Failed to parse from meta properties")
     return None
 
 
 def _extractFromHTMLTag(parsedHTML):
+    list_of_times_attribute = parsedHTML.findAll("time")
     # <time>
-    for time in parsedHTML.findAll("time"):
+    for time in list_of_times_attribute:
         datetime = time.get('datetime', '')
         if len(datetime) > 0:
             return parseStrDate(datetime)
 
         datetime = time.get('class', '')
-        if len(datetime) > 0 and datetime[0].lower() == "timestamp":
-            return parseStrDate(time.string)
+        if len(datetime) > 0:
+            # and datetime[0].lower() == "timestamp":
+            date_string = time.string or time.text
+            return parseStrDate(date_string)
 
     tag = parsedHTML.find("span", {"itemprop": "datePublished"})
     if tag is not None:
@@ -189,18 +221,15 @@ def _extractFromHTMLTag(parsedHTML):
         if dateText is not None:
             return parseStrDate(dateText)
 
-    # class=
-    for tag in parsedHTML.find_all(['span', 'p', 'div'],
-                                   class_=re.compile("pubdate|timestamp|article_date|articledate|date", re.IGNORECASE)):
-        dateText = tag.string
-        if dateText is None:
-            dateText = tag.text
+    possibleDate = _extract_by_tag(['span', 'p', 'div'], parsedHTML, attr='class_')
+    if possibleDate is not None and possibleDate != '':
+        return possibleDate
 
-        possibleDate = parseStrDate(dateText)
+    possibleDate = _extract_by_tag(['span', 'p', 'div', 'li'], parsedHTML, attr='id')
+    if possibleDate is not None and possibleDate != '':
+        return possibleDate
 
-        if possibleDate is not None:
-            return possibleDate
-
+    logger_handler.debug("ERROR- [_extractFromHTMLTag] - Failed to parse from HTML tags")
     return None
 
 
@@ -226,6 +255,8 @@ def extractArticlePublishedDate(articleLink, html=None):
         articleDate = possibleDate
 
     except Exception as e:
+        logger_handler.debug(
+            "ERROR-INFO- [extractArticlePublishedDate] - Exception for {link}".format(link=articleLink))
         print("Exception in extractArticlePublishedDate for " + articleLink)
         print(e.args)
 
@@ -240,7 +271,7 @@ def _get_html_response(url):
     """
     request = urllib.Request(url)
     html = urllib.build_opener().open(request).read()
-
+    logger_handler.info("Request - {url}".format(url=url))
     return html
 
 
@@ -256,7 +287,6 @@ def get_relevant_date(url, html=None):
     """
     # getting date by input url
     url_base_date = _extractFromURL(url)
-
     # bs parsing for extended data
     html = html or _get_html_response(url)
     parsed_html = BeautifulSoup(html, "lxml")
@@ -269,17 +299,18 @@ def get_relevant_date(url, html=None):
     possible_dates = [url_base_date, jsonld_base_date, meta_base_date, html_tags_base_date]
     possible_dates = filter(lambda _date: _date is not None and isinstance(_date, datetime), possible_dates)
     possible_dates = [_date.replace(tzinfo=pytz.UTC) for _date in possible_dates]
-    print(possible_dates)
 
     metrics_count(
         name="articleDateExtractor_success_total" if len(possible_dates) != 0 else "articleDateExtractor_failed_total",
-        labels={"domain": urlparse(url).netloc},
         value=1)
+
+    if len(possible_dates) == 0:
+        logger_handler.info("[get_relevant_date] - None possible dates for {url}".format(url=url))
+        return None
 
     # return oldest date
     return min(possible_dates)
 
 
 if __name__ == '__main__':
-    d = get_relevant_date("http://techcrunch.com/2015/11/30/atlassian-share-price/")
-    print(d)
+    d = get_relevant_date("https://elegantessence.tumblr.com/post/716279737919602688")
